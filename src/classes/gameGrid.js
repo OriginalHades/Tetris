@@ -28,6 +28,10 @@ class GameGrid{
         this.selected_block = undefined
         this.can_hold = true
         this.held_block = undefined
+        this.fall = true
+        this.placement_delay = new Counter(20, function(){
+            this.consecutive_collision += 1
+        }.bind(this))
 
         this.left_counter = new Counter(50, function(){
             if(!this.collides(new Point2D(-BLOCK_SIZE,0))){
@@ -40,7 +44,9 @@ class GameGrid{
             }
         }.bind(this))
         this.fall_counter = new Counter(200,function(){
-            this.selected_block.position.add(new Point2D(0,BLOCK_SIZE))
+            if(this.fall){
+                this.selected_block.position.add(new Point2D(0,BLOCK_SIZE))
+            }
         }.bind(this))
         this.rotate_counter = new Counter(200, function(){
             this.selected_block.rotate()
@@ -70,6 +76,8 @@ class GameGrid{
                 offset += 1
             }
             this.selected_block.position.add(new Point2D(0,BLOCK_SIZE*(offset-1)))
+
+            this.consecutive_collision = 11
             this.score += offset*2
         }.bind(this))
 
@@ -181,7 +189,7 @@ class GameGrid{
 
         if(this.movement.faster){
             this.score += 1
-            this.fall_counter.delay = 1
+            this.fall_counter.delay = 25
         }
         else{
             this.fall_counter.delay = 240 - (new Date() - this.start_time)/1000 // Seconds elapsed 4 minutes until fastest fall speed
@@ -192,25 +200,16 @@ class GameGrid{
         let collision = this.collides(new Point2D(0,BLOCK_SIZE))
 
         if(collision){
-            this.placed_blocks.push(this.selected_block)
-            let blocks = this.selected_block.core_segment.getChildren().concat([this.selected_block.core_segment])
-            
-            if(sound.BLOCK_SET){
-                block_set.play()
+            this.fall = false
+            this.placement_delay.trigger()
+        
+            if(this.consecutive_collision > 10){
+                this.placeSelected()
             }
-
-            for(let i in blocks){
-                let block = blocks[i]
-                let position = block.getPosition().getOffset(new Point2D(this.selected_block.position.x/BLOCK_SIZE,this.selected_block.position.y/BLOCK_SIZE))
-
-                this.rows[position.y][position.x] = {block:block,parent:parent}
-            }
-
-            this.selected_block = undefined
-            this.consecutive_collision += 1
         }
         else{
             this.consecutive_collision = 0
+            this.fall = true
             this.fall_counter.trigger()
         }
 
@@ -255,23 +254,46 @@ class GameGrid{
             }
         }
 
-        if(this.consecutive_collision > 1){
+        if(this.consecutive_collision > 12){
             return false
         }
         else{
             return true
         }
     }
+    placeSelected(){
+        this.placed_blocks.push(this.selected_block)
+        let blocks = this.selected_block.core_segment.getChildren().concat([this.selected_block.core_segment])
+        
+        if(sound.BLOCK_SET){
+            block_set.play()
+        }
+
+        for(let i in blocks){
+            let block = blocks[i]
+            let position = block.getPosition().getOffset(new Point2D(this.selected_block.position.x/BLOCK_SIZE,this.selected_block.position.y/BLOCK_SIZE))
+
+            this.rows[position.y][position.x] = {block:block,parent:parent}
+        }
+
+        this.selected_block = undefined
+    }
     draw(ctx){
         ctx.save()
 
+        let style = getComputedStyle(document.body);
+        let primary = style.getPropertyValue('--primary');
+        let secondary = style.getPropertyValue('--secondary');
+        let text1 = style.getPropertyValue('--text1');
+        let text2 = style.getPropertyValue('--text2');
+
         ctx.translate(this.position.x, this.position.y)
-        ctx.fillStyle = "rgba(245, 245, 245)"
-        ctx.strokeStyle = "black"
+        ctx.fillStyle = secondary
+        ctx.strokeStyle = secondary
         ctx.fillRect(0,0,this.width,this.height)
         ctx.strokeRect(0,0,this.width,this.height)
 
-        ctx.fillStyle = "black"
+        ctx.fillStyle = text1
         ctx.font = "30px monospace"
         ctx.fillText("Score:" + this.score,-200,250)
 
@@ -290,7 +312,8 @@ class GameGrid{
         }
 
         if(this.selected_block != undefined){
-            this.selected_block.draw(ctx)
+            ctx.strokeStyle = text1
+            this.selected_block.draw(ctx,new Point2D(0,0))
         
             let offset = 1
             while(!this.collides(new Point2D(0,BLOCK_SIZE*offset)) && offset < DROP_COLLISION_ITER_LIMIT){
@@ -306,12 +329,15 @@ class GameGrid{
                 if(row[i] != undefined){
                     //row[i].block.draw(ctx,new Point2D(i*BLOCK_SIZE,j*BLOCK_SIZE))
                     ctx.fillStyle = row[i].block.color.stringified()
+                    ctx.strokeStyle = text1
                     Block.drawSegment(ctx, new Point2D(i*BLOCK_SIZE,j*BLOCK_SIZE))
                 }
             }
         }
 
-        ctx.strokeRect(-200,0,150,150)
+        ctx.fillStyle = secondary;
+        ctx.strokeStyle = text1
+        ctx.fillRect(-200,0,150,150)
 
         if(this.held_block != undefined){
             let box = this.held_block.getBoundingBox()
@@ -331,7 +357,8 @@ class GameGrid{
             
             //console.log(offset)
             //ctx.strokeRect(box.x,box.y,box.width,box.height)
-            ctx.strokeRect(this.width+25,(200*i),150,150)
+            ctx.fillStyle = secondary;
+            ctx.fillRect(this.width+25,(200*i),150,150)
             block.core_segment.draw(ctx, new Point2D(this.width+100-box.width/2,75+(200*i)-box.height/2).getOffset(offset))
         }
 

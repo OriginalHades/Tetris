@@ -1,10 +1,48 @@
+:root{
+    /*--primary: rgba(255,255,255,1);
+    --secondary: rgba(240,240,240,1);*/
+
+    --primary: rgba(0,0,0,1);
+    --secondary: rgba(100,100,100,1);
+
+
+    --text1: rgba(200,200,200,1);
+    --text2: rgba(0,0,0,1);
+}
+
+html *{
+    font: monospace 16px;
+}
 body{
-    background-color: black;
+    background-color: var(--primary);
 }
 #ctx{
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%,-50%);
-    background-color: white;
+    background-color: var(--primary);
+}
+#menu{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+
+    width: 200px;
+    height: 50px;
+    background-color: var(--primary);
+
+    transition: left 1s, opacity 1s;
+}
+#start_button, #themes{
+    width: 100%;
+    background-color: var(--primary);
+    border: 1px solid var(--text1);
+    color: var(--text1);
+    font-size: 20px;
+}
+#menu[started="true"]{
+    left: 0%;
+    opacity: 0;
 }

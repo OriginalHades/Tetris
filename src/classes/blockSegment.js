@@ -41,7 +41,7 @@ class BlockSegment{
         this.segments.bottom = new BlockSegment(this,this.position_sheet.bottom,this.color)
         return this.segments.bottom
     }
-    draw(ctx, offset=new Point2D(0,0)){
+    draw(ctx, offset=new Point2D(0,0), highlight="rgb(255,255,255)"){
         //console.log(this.getPosition())
 
         for(let i in this.segments){
@@ -50,12 +50,12 @@ class BlockSegment{
                 continue
             }
             
-            segment.draw(ctx,offset)
+            segment.draw(ctx, offset, highlight)
         }
 
         ctx.fillStyle = this.color.stringified()
         let pos = this.getPosition().getMultiplied(BLOCK_SIZE).getOffset(offset)
-        Block.drawSegment(ctx,pos)
+        Block.drawSegment(ctx,pos, highlight)
     }
     drawWire(ctx, offset=new Point2D(0,0)){
         for(let i in this.segments){

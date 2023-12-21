@@ -36,13 +36,13 @@ class Block{
             this.setSegmentsFromTemplate(elem.segments,element["add"+direction[0].toUpperCase()+direction.substr(1,direction.length)]())
         }
     }
-    draw(ctx,offset=new Point2D(0,0)){
+    draw(ctx,offset=new Point2D(0,0), highlight="rgb(255,255,255)"){
         //let box = this.getBoundingBox()
 
         //ctx.strokeStyle = "green"
         //ctx.strokeRect(box.x+offset.x,box.y+offset.y,box.width,box.height)
 
-        this.core_segment.draw(ctx, this.position.getOffset(offset))
+        this.core_segment.draw(ctx, this.position.getOffset(offset), highlight)
     }
     drawWire(ctx,offset=new Point2D(0,0)){
         this.core_segment.drawWire(ctx, this.position.getOffset(offset))
@@ -127,18 +127,18 @@ class Block{
 
         return new Point2D(x,y)
     }
-    static drawSegment(ctx, pos){
+    static drawSegment(ctx, pos, highlight="rgb(255,255,255)"){
         ctx.fillRect(pos.x,pos.y, BLOCK_SIZE, BLOCK_SIZE)
-        ctx.fillStyle = "rgba(255,255,255,0.2)"
+        ctx.globalAlpha = 0.2;
+        ctx.fillStyle = highlight
         ctx.fillRect(pos.x+BLOCK_SIZE/8,pos.y+BLOCK_SIZE/8,BLOCK_SIZE-BLOCK_SIZE/2,BLOCK_SIZE-BLOCK_SIZE/2)
+        ctx.globalAlpha = 1;
 
-        ctx.strokeStyle = "black"
         ctx.strokeRect(pos.x,pos.y, BLOCK_SIZE, BLOCK_SIZE)
     }
     static drawWireSegment(ctx,pos){
         ctx.shadowBlur = 10;
 
-        ctx.strokeStyle = "black"
         ctx.strokeRect(pos.x,pos.y, BLOCK_SIZE, BLOCK_SIZE)
         ctx.shadowBlur = 0;
     }

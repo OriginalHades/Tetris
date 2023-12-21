@@ -4,15 +4,9 @@ let ctx = canvas.getContext("2d")
 canvas.width = window.innerWidth
 canvas.height = window.innerHeight
 
-let sound = {
-    BLOCK_SET: false,
-    CLEAR_LINE: true
-}
+let game_position = new Point2D(window.innerWidth/2-(GAME_WIDTH/2*BLOCK_SIZE),window.innerHeight/2-(GAME_HEIGHT/2*BLOCK_SIZE))
 
-const block_set = new Audio('sound/drop.wav');
-const clear_line = new Audio('sound/clear_line.wav');
-
-let game = new GameGrid(new Point2D(window.innerWidth/2-(GAME_WIDTH/2*BLOCK_SIZE),window.innerHeight/2-(GAME_HEIGHT/2*BLOCK_SIZE)),GAME_WIDTH,GAME_HEIGHT)
+let game = new GameGrid(game_position,GAME_WIDTH,GAME_HEIGHT)
 
 let drawing = true
 function draw(){
@@ -25,18 +19,43 @@ function draw(){
 }
 draw()
 
-let game_interval = setInterval(function(){
-    if(!game.update()){
-        console.log("Game over")
-        drawing = false
+let game_ended = false
 
-        //canvas.style.backgroundColor = "red"
-        clearInterval(game_interval)
+function startGame(){
+    let game_interval = setInterval(function(){
+        if(!game.update()){
+            console.log("Game over")
+            menu.setAttribute("started",false)
+            game_ended = true
+            //canvas.style.backgroundColor = "red"
+            clearInterval(game_interval)
+        }
+    },1)
+}
+
+let start_button = document.getElementById("start_button")
+let menu = document.getElementById("menu")
+let theme_selection = document.getElementById("themes")
+for(let i in themes){
+    let theme = document.createElement("option")
+    theme.innerHTML = i
+    theme.value = i
+    theme.style.backgroundColor = themes[i].primary
+    theme.style.color = themes[i].text1
+    theme_selection.addEventListener("change",function(){
+        if(theme_selection.value == theme.value){
+            applyTheme(themes[i])
+        }
+    })
+    theme_selection.appendChild(theme)
+}
+
+start_button.onclick = function(){
+    if(game_ended){
+        game = new GameGrid(game_position,GAME_WIDTH,GAME_HEIGHT)
     }
-},1)
-
-let block = new Block(new Point2D(200,200))
-block.setSegmentsFromTemplate(L_BLOCK_TEMPLATE)
-
-block.draw(ctx)
+    start_button.blur()
+    menu.setAttribute("started",true)
+    startGame()
+}
 //block.rotate(90)
