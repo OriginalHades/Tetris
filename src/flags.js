@@ -1,0 +1,5 @@
+const BLOCK_SIZE = 30
+const GAME_WIDTH = 14
+const GAME_HEIGHT = 25
+const DROP_COLLISION_ITER_LIMIT = 50
+
