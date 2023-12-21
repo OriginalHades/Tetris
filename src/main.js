@@ -4,6 +4,12 @@ let ctx = canvas.getContext("2d")
 canvas.width = window.innerWidth
 canvas.height = window.innerHeight
 
+function isNumeric(str) {
+    if (typeof str != "string") return false // we only process strings!  
+    return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+           !isNaN(parseInt(str)) // ...and ensure strings of whitespace fail
+  }
+
 class BlockSegment{
     constructor(parent,offset,color="#000000"){
         this.offset = offset
@@ -618,11 +624,14 @@ class GameGrid{
         let a = 0
         for(let i in this.controlls){
             a += 35
+            let name = i
+            let value = this.controlls[i]
 
-            if(i){
-                
+            if(typeof value == "number"){
+                value = keyboardMap[value]
             }
-            ctx.fillText(i[0].toUpperCase() + i.substring(1,i.length) + ":" + this.controlls[i],-200,300+a)
+
+            ctx.fillText(name[0].toUpperCase() + name.substring(1,name.length) + ":" + value,-200,300+a)
         }
 
         if(this.selected_block != undefined){
