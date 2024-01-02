@@ -1,3 +1,6 @@
+/*
+    A class to handle all things random ¯\_(ツ)_/¯
+*/
 class Random {
     constructor() {
 
@@ -15,15 +18,26 @@ class Random {
     }
 }
 
+/*
+    And red,green,blue color
+*/
 class ColorRGB{
     constructor(r,g,b){
         this.rin = r
         this.gin = g
         this.bin = b
     }
+    /*
+        Returns the color in a usable string format
+    */
     stringified(){
         return `rgb(${this.r},${this.g},${this.b})`
     }
+    /*
+        Add a value to r,g,b and return a new color
+
+        note: doesnt affect the current object, creates a new one
+    */  
     getOffset(offset){
         return new ColorRGB(this.r + offset, this.g + offset, this.b + offset)
     }
@@ -47,6 +61,9 @@ class ColorRGB{
     }
 }
 
+/*
+    A class to simplify working with angles, makes everything work in degrees
+*/
 class AngleD {
     constructor(angle) {
         this.angle = angle
@@ -63,58 +80,46 @@ class AngleD {
     set degrees(degs) {
         this.angle = degs
     }
+    /*
+        Returns new angle offset by an amount of degrees
+    */
     getOffset(degs) {
         return new AngleD(this.degrees + degs)
     }
 }
 
+/*
+    A class that handles all positions, has x,y coordinates and supporting functions
+*/
 class Point2D {
     constructor(x, y) {
         this.x = x
         this.y = y
     }
-    angleTo(x, y) {
-        let dy = this.y - y
-        let dx = this.x - x
-        let theta = Math.atan2(dy, dx) // range (-PI, PI]
-        theta *= 180 / Math.PI // rads to degs, range (-180, 180]
-        if (theta < 0) theta = 360 + theta; // range [0, 360)
-        return new AngleD((theta + 180) % 360) // rads to degs
-    }
-    distanceTo(x, y) {
-        return Math.abs(Math.sqrt(Math.pow(this.x - x, 2) + Math.pow(this.y - y, 2)))
-    }
     add(vec2d) {
         this.x += vec2d.x
         this.y += vec2d.y
     }
+    /*
+        Returns a new position offset by another position
+    */    
     getOffset(position) {
         return new Point2D(this.x + position.x, this.y + position.y)
     }
+    /*
+        Returns a new position, properties x and y are multiplied by a number
+    */
     getMultiplied(mult){
         return new Point2D(this.x * mult, this.y * mult)
     }
-    getInverted() {
-        return new Point2D(-this.rx, -this.ry)
-    }
-    moveOnAxis(angle, magnitude) {
-        this.x += Math.cos(angle.radians) * magnitude
-        this.y += Math.sin(angle.radians) * magnitude
-    }
-    rotateRelativeTo(point,angl){
-        let angle = this.angleTo(point.x,point.y).getOffset(angl)
-        let distance = this.distanceTo(point.x,point.y)
-
-        //console.log(angle,distance,Math.cos(angle.radians),Math.sin(angle.radians))
-
-        this.x = Math.floor(point.x + Math.cos(angle.radians)*distance)
-        this.y = Math.floor(point.y + Math.sin(angle.radians)*distance)
-
-        this.x = Math.abs(this.x) <= 1 ? 0 : this.x
-        this.y = Math.abs(this.y) <= 1 ? 0 : this.y
-    }
 }
 
+/*
+    A class that handles timing, used for controlls.
+
+    delay -> the delay between activations in ms
+    callback -> a function to be called on each activation
+*/
 class Counter{
     constructor(delay, callback){
         this.delay = delay
@@ -129,6 +134,10 @@ class Counter{
     }
 }
 
+
+/*
+    A function to apply a theme
+*/
 function applyTheme(theme){
     for(let i in theme){
         document.documentElement.style.setProperty(`--${i}`, theme[i]);
@@ -136,7 +145,7 @@ function applyTheme(theme){
 }
 
 function isNumeric(str) {
-    if (typeof str != "string") return false // we only process strings!  
-    return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
-           !isNaN(parseInt(str)) // ...and ensure strings of whitespace fail
+    if (typeof str != "string") return false
+    return !isNaN(str) && 
+           !isNaN(parseInt(str)) 
 }

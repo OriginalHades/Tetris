@@ -1,3 +1,6 @@
+/*
+    A class that picks random predefined blocks templates and creates new blocks with them
+*/
 class BlockGenerator{
     constructor(que_length){
         this.blocks = []
@@ -8,6 +11,9 @@ class BlockGenerator{
         }
         console.log(this.blocks)
     }
+    /*
+        Get next blocks and create new one
+    */
     getNext(){
         this.generateNew()
         return this.blocks.pop().block

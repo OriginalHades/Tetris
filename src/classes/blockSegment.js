@@ -1,3 +1,7 @@
+/*
+    A single segment of a block.
+    Stores information about the blocks around it
+*/
 class BlockSegment{
     constructor(parent,offset,color="#000000"){
         this.offset = offset
@@ -71,6 +75,9 @@ class BlockSegment{
         let pos = this.getPosition().getMultiplied(BLOCK_SIZE).getOffset(offset)
         Block.drawWireSegment(ctx,pos)
     }
+    /*
+        Move all blocks clockwise, rotating everything by 90 degrees
+    */
     shift(){
         let new_segments = {
             top: undefined,
@@ -105,6 +112,9 @@ class BlockSegment{
 
         this.alignOffset()
     }
+    /*
+        Set all offset correctly, usually after shifting
+    */
     alignOffset(){
         if(this.parent == undefined){
             return
@@ -119,6 +129,9 @@ class BlockSegment{
             this.offset = this.position_sheet[i]
         }
     }
+    /*
+        Get a block without a parent
+    */
     getCore(){
         let pivot = this
         while(pivot.parent != undefined){
@@ -127,6 +140,10 @@ class BlockSegment{
 
         return pivot
     }
+    /*
+        Check for collision with another segment,
+        can use offsets for lookahead checks.
+    */
     collidesWith(segment,offset1=new Point2D(0,0),offset2=new Point2D(0,0)){
         let pos = this.getPosition().getMultiplied(BLOCK_SIZE).getOffset(offset1)
         let pos2 = segment.getPosition().getMultiplied(BLOCK_SIZE).getOffset(offset2)

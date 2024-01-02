@@ -8,6 +8,9 @@ let game_position = new Point2D(window.innerWidth/2-(GAME_WIDTH/2*BLOCK_SIZE),wi
 
 let game = new GameGrid(game_position,GAME_WIDTH,GAME_HEIGHT)
 
+/*
+    Draw loop
+*/
 let drawing = true
 function draw(){
     ctx.clearRect(0,0,canvas.width,canvas.height)
@@ -21,6 +24,9 @@ draw()
 
 let game_ended = false
 
+/*
+    Create main loop
+*/
 function startGame(){
     let game_interval = setInterval(function(){
         if(!game.update()){

@@ -1,9 +1,19 @@
+/*
+    An entire game block
+
+    position -> position of the core segment
+*/
 class Block{
     constructor(position){
         this.position = position
         this.color = Random.color()
         this.core_segment = new BlockSegment(undefined,new Point2D(0,0),this.color)
     }
+    /*
+        Check for collision with another block
+
+        offset -> a lookahead check checks with an offset position of this block
+    */
     collidesWith(block,offset=new Point2D(0,0)){
         let collides = false
 
@@ -28,6 +38,9 @@ class Block{
 
         return collides
     }
+    /*
+        Uses one of the predefined templates and generate how this block is layed out
+    */
     setSegmentsFromTemplate(segments,element=this.core_segment){
         for(let i in segments){
             let elem = segments[i]
@@ -36,6 +49,9 @@ class Block{
             this.setSegmentsFromTemplate(elem.segments,element["add"+direction[0].toUpperCase()+direction.substr(1,direction.length)]())
         }
     }
+    /*
+        Draw the block
+    */
     draw(ctx,offset=new Point2D(0,0), highlight="rgb(255,255,255)"){
         //let box = this.getBoundingBox()
 
@@ -44,9 +60,15 @@ class Block{
 
         this.core_segment.draw(ctx, this.position.getOffset(offset), highlight)
     }
+    /*
+        Draw outlines of the block
+    */
     drawWire(ctx,offset=new Point2D(0,0)){
         this.core_segment.drawWire(ctx, this.position.getOffset(offset))
     }
+    /*
+        Get the lowest positioned block of all the segments connected to the core
+    */
     getLowest(){
         let lowest = new Point2D(0,0)
 
@@ -62,6 +84,9 @@ class Block{
 
         return lowest
     }
+    /*
+        Get the highest positioned block of all the segments connected to the core
+    */
     getHighest(){
         let highest = new Point2D(0,canvas.height)
 
@@ -74,6 +99,9 @@ class Block{
         }
         return highest
     }
+    /*
+        Get the rightest positioned block of all the segments connected to the core
+    */
     getRightest(){
         let rightest = new Point2D(0,0)
 
@@ -90,6 +118,9 @@ class Block{
 
         return rightest
     }
+    /*
+        Get the leftest positioned block of all the segments connected to the core
+    */
     getLeftest(){
         let leftest = new Point2D(canvas.width,0)
 
@@ -105,9 +136,15 @@ class Block{
 
         return leftest
     }
+    /*
+        Rotate
+    */
     rotate(){
         this.core_segment.shift()
     }
+    /*
+        Get a rectangle that outlines this block
+    */
     getBoundingBox(){
         let highest = this.getHighest()
         let lowest = this.getLowest()
@@ -121,6 +158,9 @@ class Block{
             height: lowest.y - highest.y
         }
     }
+    /*
+        Get the offset of this block to the left top corner of its bounding box
+    */
     getCenterOffset(){
         let x = this.position.x - this.getLeftest().x
         let y = this.position.y - this.getHighest().y

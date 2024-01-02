@@ -1,4 +1,6 @@
-
+/*
+    Predefined blocks
+*/
 const L_BLOCK_TEMPLATE = [
     {
         direction: "bottom",

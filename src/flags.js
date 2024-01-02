@@ -1,11 +1,16 @@
+/*
+    All major game presets are here
+*/
+
+
 const BLOCK_SIZE = 30
 const GAME_WIDTH = 14
 const GAME_HEIGHT = 25
 const DROP_COLLISION_ITER_LIMIT = 50
 
 let sound = {
-    BLOCK_SET: false,
-    CLEAR_LINE: true
+    BLOCK_SET: false, // When a block sets in place
+    CLEAR_LINE: true // When a line is completed
 }
 
 const block_set = new Audio('sound/drop.wav');
@@ -22,12 +27,6 @@ const themes = {
         primary: "rgba(0,0,0,1)",
         secondary: "rgba(100,100,100,1)",
         text1: "rgba(200,200,200,1)",
-        text2: "rgba(0,0,0,1)"
-    },
-    rose: {
-        primary: "#660025",
-        secondary: "#280711",
-        text1: "#828282",
         text2: "rgba(0,0,0,1)"
     }
 }
